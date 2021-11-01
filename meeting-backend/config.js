@@ -1,6 +1,6 @@
 module.exports = {
     database: {
-        dbName: 'TEST',
+        dbName: 'test',
         host: 'localhost',
         port: 5432,
         user: 'postgres',
