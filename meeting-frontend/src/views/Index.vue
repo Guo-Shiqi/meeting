@@ -1,17 +1,40 @@
 <template>
-	<HelloWorld msg="Hello Vue 3 + TypeScript + Vite" />
+	<el-container>
+		<el-header>
+			<img alt="Meeting logo" src="../assets/logo2.png" />
+		</el-header>
+		<el-main>
+			<el-button type="primary" @click="join">加入会议</el-button>
+			<br />
+			<el-button @click="signin">注册/登录</el-button>
+		</el-main>
+	</el-container>
 </template>
 
-<style scoped>
-#admin { width: 100%; min-height: 100vh; height: 100vh; }
-.top { height: 20px; }
+<script setup lang="ts">import router from '@/router';
 
-.main { height: calc(100% - 40px); }
-.main .nav { width: 200px; }
-.main .tabs { width: calc(100% - 200px); }
-</style>
+function join() {
+	router.push('/join');
+}
 
-<script setup lang="ts">
-import HelloWorld from '@/components/HelloWorld.vue'
-
+function signin() {
+	router.push('/signin');
+}
 </script>
+
+<style scoped>
+.el-button {
+	height: 40px;
+	width: 320px;
+}
+.el-header {
+	margin-top: 100px;
+}
+.el-main {
+	margin-top: 100px;
+}
+
+.el-button {
+	margin-top: 30px;
+}
+</style>

@@ -19,7 +19,7 @@
                 </el-form-item>
             </el-form>
         </el-main>
-        <el-footer>Footer</el-footer>
+        <el-footer hidden>Footer</el-footer>
     </el-container>
 </template>
 <script lang='ts' setup>
@@ -45,9 +45,13 @@ function submit() {
     }
 }
 </script>
-<style>
+<style scoped>
 .el-header {
-    height: 10vh;
+    width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+    padding: 0;
 }
 
 .el-footer {
@@ -59,18 +63,17 @@ function submit() {
 .el-main {
     text-align: center;
     line-height: 160px;
-    margin-top: 8vh;
 }
 
 .el-form {
     margin-left: auto;
     margin-right: auto;
-    width: 260px;
+    width: 320px;
 }
 
 .el-button {
     margin-top: 3vh;
-    width: 260px;
-    height: 35px;
+    width: 320px;
+    height: 40px;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
 	<el-config-provider :locale="locale">
-		<div id="nav">
+		<div id="nav" hidden>
 			<router-link to="/">{{ $t("nav.home") }}</router-link> |
 			<router-link to="/about">{{ $t("nav.about") }}</router-link> |
 			<router-link to="/example">{{ $t("nav.example") }}</router-link>|
@@ -8,7 +8,6 @@
 			<router-link to="/signup">{{ $t("nav.signup") }}</router-link>
 		</div>
 		<router-view />
-		<div hidden>我知道你肯定会修改这里的^.^</div>
 	</el-config-provider>
 </template>
 
