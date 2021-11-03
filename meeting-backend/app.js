@@ -21,7 +21,7 @@ app.use(
         allowHeaders: ['Content-Type', 'Authorization', 'Accept'], //设置服务器支持的所有头信息字段
         exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'] //设置获取其他自定义字段
     })
-  );
+);
 
 // parse request body:
 app.use(bodyParser());
@@ -31,3 +31,5 @@ app.use(controller());
 
 app.listen(3001);
 console.log('app started at port 3001...');
+
+require('./services/socket_init');
