@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "dev": "node ./app.js",
+    "sync": "node ./db-init.js"
+  },
   "dependencies": {
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
