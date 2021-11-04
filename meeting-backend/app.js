@@ -23,3 +23,5 @@ app.use(controller());
 
 app.listen(3001);
 console.log('app started at port 3001...');
+
+require('./services/socket_init');
