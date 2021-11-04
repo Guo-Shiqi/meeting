@@ -11,15 +11,20 @@
 	</el-container>
 </template>
 
-<script setup lang="ts">import router from '@/router';
+<script>
+import router from '../router'
+export default {
+	methods: {
+		join: () => {
+			router.push('/join');
+		},
 
-function join() {
-	router.push('/join');
+		signin: () => {
+			router.push('/signin');
+		},
+	}
 }
 
-function signin() {
-	router.push('/signin');
-}
 </script>
 
 <style scoped>

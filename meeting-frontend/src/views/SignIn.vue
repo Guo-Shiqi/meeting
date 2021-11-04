@@ -16,37 +16,48 @@
                 </el-form-item>
                 <el-form-item style="margin-top: -15px;">
                     <el-checkbox label="记住密码"></el-checkbox>
-                    
+
                     <el-link type="primary" :underline="false" @click="toSignUp">新用户注册</el-link>
                 </el-form-item>
             </el-form>
         </el-main>
     </el-container>
 </template>
-<script lang='ts' setup>
-import { ref } from "vue";
-import Base from '@/lib/ts/Base'
-import router from "@/router";
-let labelPosition = ref('top');
-let formData = ref({
-    name: '',
-    password: '',
-    password2: '',
-});
-function submit() {
-    Base.NetBase.spost<AnyObject>("http://127.0.0.1:3001/api/user/signin", formData.value)
-        .then(res => {
-            console.log(res);
-            alert(JSON.stringify(res));
-        })
-        .catch(err => {
-            console.log(err)
-            alert("登录失败")
-        })
+<script>
+import 'whatwg-fetch'
+import router from '../router';
+export default {
+    data() {
+        return {
+            labelPosition: 'top',
+            formData: {
+                name: '',
+                password: '',
+            }
+        }
+    },
+    methods: {
+        submit: () => {
+            fetch("http://127.0.0.1:3001/api/user/signin", {
+                method: "POST",
+                body: JSON.stringify(this.formData),
+                headers: {
+                    'content-type': 'application/json'
+                },
+            }).then(res => {
+                console.log(res);
+                alert(JSON.stringify(res));
+            }).catch(err => {
+                console.log(err)
+                alert("登录失败")
+            })
+        },
+        toSignUp: () => {
+            router.push("/signup")
+        }
+    }
 }
-function toSignUp(){
-    router.push("/signup")
-}
+
 </script>
 <style scoped>
 .el-header {
@@ -59,14 +70,13 @@ function toSignUp(){
 
 .el-footer {
     color: var(--el-text-color-primary);
-    text-align: center;
+    text-align: left;
     line-height: 60px;
 }
 
 .el-main {
     margin-top: -20px;
-    text-align: center;
-    line-height: 160px;
+    text-align: left;
 }
 
 .el-form {
@@ -76,15 +86,15 @@ function toSignUp(){
 }
 
 .el-button {
-	height: 40px;
-	width: 320px;
+    height: 40px;
+    width: 320px;
 }
 
 .el-form-item {
     margin-top: 40px;
 }
 
-.el-link{
+.el-link {
     margin-top: -8px;
     margin-left: 170px;
 }

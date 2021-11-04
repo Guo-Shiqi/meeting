@@ -5,6 +5,7 @@ node_modules
 dist
 dist-ssr
 *.local
+meeting-frontend-old
 
 package-lock.json
 yarn.lock

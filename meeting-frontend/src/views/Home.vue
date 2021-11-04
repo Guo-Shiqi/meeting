@@ -40,13 +40,15 @@
     </el-container>
 </template>
 
-<script setup lang="ts">
-import router from '@/router';
-import { Setting, Plus, Calendar, BottomRight } from '@element-plus/icons'
-// import { Setting } from '@element-plus/icons'
-function join() {
-    router.push('/join');
+<script>
+export default {
+    methods: {
+        join: () => {
+            this.router.push('/join');
+        },
+    }
 }
+
 </script>
 
 <style scoped>

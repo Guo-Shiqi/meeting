@@ -22,26 +22,40 @@
         <el-footer hidden>Footer</el-footer>
     </el-container>
 </template>
-<script lang='ts' setup>
-import { ref } from "vue";
-import Base from '@/lib/ts/Base'
-let labelPosition = ref('top');
-let formData = ref({
-    name: '',
-    password: '',
-    password2: '',
-});
-function submit() {
-    if (formData.value.password != formData.value.password2) {
-        alert("两次密码不同")
-    } else {
-        Base.NetBase.spost<AnyObject>("http://127.0.0.1:3001/api/user/signup", formData.value)
-            .then(res => {
-                console.log(res);
-                alert("注册成功!\nId:" + res.id)
-            })
-            .catch(err => console.log(err))
+<script>
+import 'whatwg-fetch'
+export default {
+    data() {
+        return {
+            labelPosition: 'top',
+            formData: {
+                name: '',
+                password: '',
+                password2: '',
+            }
+        }
+    },
+    methods: {
+        submit: function(){
+            console.log(this)
+            if (this.formData.password != this.formData.password2) {
+                alert("两次密码不同")
+            } else {
+                fetch("http://127.0.0.1:3001/api/user/signup", {
+                    method: "POST",
+                    body: JSON.stringify(this.formData),
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                }).then(res => {
+                    console.log(res);
+                    alert("注册成功!\nId:" + res.id)
+                }).catch(err =>
+                    console.log(err)
+                )
 
+            }
+        }
     }
 }
 </script>
@@ -54,15 +68,9 @@ function submit() {
     padding: 0;
 }
 
-.el-footer {
-    color: var(--el-text-color-primary);
-    text-align: center;
-    line-height: 60px;
-}
 
 .el-main {
-    text-align: center;
-    line-height: 160px;
+    text-align: left;
 }
 
 .el-form {

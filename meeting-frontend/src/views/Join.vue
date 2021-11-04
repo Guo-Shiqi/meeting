@@ -13,38 +13,45 @@
                 </el-form-item>
                 <el-form-item label="会议设置" style="text-align: left;">
                     <el-checkbox label="自动连接音频"></el-checkbox>
-                    <br/>
+                    <br />
                     <el-checkbox label="入会开启摄像头"></el-checkbox>
-                    <br/>
+                    <br />
                     <el-checkbox label="入会开启麦克风"></el-checkbox>
                 </el-form-item>
-                <el-form-item style="margin-top: 200px;">
+                <el-form-item style="margin-top: 100px;">
                     <el-button type="primary" @click="submit">加入会议</el-button>
                 </el-form-item>
             </el-form>
         </el-main>
     </el-container>
 </template>
-<script lang='ts' setup>
-import { ref } from "vue";
-import Base from '@/lib/ts/Base'
-import router from "@/router";
-let labelPosition = ref('top');
-let formData = ref({
-    name: '',
-    meetingID: '',
-});
-function submit() {
-    // Base.NetBase.spost<AnyObject>("http://127.0.0.1:3001/api/user/signin", formData.value)
-    //     .then(res => {
-    //         console.log(res);
-    //         alert(JSON.stringify(res));
-    //     })
-    //     .catch(err => {
-    //         console.log(err)
-    //         alert("登录失败")
-    //     })
+<script>
+import 'whatwg-fetch'
+export default {
+    data() {
+        return {
+            labelPosition: 'top',
+            formData: {
+                name: '',
+                meetingID: '',
+            }
+        }
+    },
+    methods: {
+        submit: () => {
+            fetch("http://127.0.0.1:3001/api/user/signin", { method: "POST" })
+                .then(res => {
+                    console.log(res);
+                    alert(JSON.stringify(res));
+                })
+                .catch(err => {
+                    console.log(err)
+                    alert("登录失败")
+                })
+        }
+    }
 }
+
 </script>
 <style scoped>
 .el-header {
@@ -56,9 +63,7 @@ function submit() {
 }
 
 .el-main {
-    margin-top: -20px;
-    text-align: center;
-    line-height: 160px;
+    text-align: left;
 }
 
 .el-form {
@@ -68,12 +73,11 @@ function submit() {
 }
 
 .el-button {
-	height: 40px;
-	width: 320px;
+    height: 40px;
+    width: 320px;
 }
 
 .el-form-item {
-    margin-top: 20px;
+    margin-top: -10px;
 }
-
 </style>
