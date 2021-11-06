@@ -9,6 +9,7 @@ var fn_signin = async (ctx, next) => {
     const user = await User.findOne({ where: { name: name, password: password } });
     if (user === null) {
         console.log('登录失败');
+        ctx.response.body="login failed";
     } else {
         console.log(user.toJSON());
         ctx.response.body=user.toJSON();

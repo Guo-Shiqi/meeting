@@ -27,6 +27,7 @@
 </template>
 <script>
 import 'whatwg-fetch'
+import axios from 'axios'
 export default {
     data() {
         return {
@@ -39,15 +40,29 @@ export default {
     },
     methods: {
         submit: () => {
-            fetch("http://127.0.0.1:3001/api/user/signin", { method: "POST" })
-                .then(res => {
-                    console.log(res);
-                    alert(JSON.stringify(res));
-                })
-                .catch(err => {
-                    console.log(err)
-                    alert("登录失败")
-                })
+            // fetch("http://127.0.0.1:3001/api/user/signin", { method: "POST" })
+            //     .then(res => {
+            //         console.log(res);
+            //         alert(JSON.stringify(res));
+            //     })
+            //     .catch(err => {
+            //         console.log(err)
+            //         alert("登录失败")
+            //     })
+
+            axios({
+                url: "http://127.0.0.1:3001/api/user/signin",
+                method: "post",
+                data: {
+                    "name" : "admin",
+                    "password" : "admin"
+                }
+            }).then(res => {
+                alert(JSON.stringify(res));
+            }).catch(err => {
+                console.log(err);
+                alert("登陆失败");
+            })
         }
     }
 }
