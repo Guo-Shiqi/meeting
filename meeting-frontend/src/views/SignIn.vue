@@ -37,7 +37,7 @@ export default {
         }
     },
     methods: {
-        submit: () => {
+        submit() {
             fetch("http://127.0.0.1:3001/api/user/signin", {
                 method: "POST",
                 body: JSON.stringify(this.formData),
