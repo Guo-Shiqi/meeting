@@ -60,7 +60,7 @@ let rtcPeerConnects = {};
 
 let $ = document.querySelector;
 
-const domLocalVideo = $("#localVideo"); // 本地视频dom
+const domLocalVideo = document.querySelector("#localVideo"); // 本地视频dom
 export default {
   data() {
     return {
@@ -77,6 +77,7 @@ export default {
 
     openCamera()
       .then((stream) => {
+        console.log("fuck fuck");
         localStream = stream; // 保存本地视频到全局变量
         pushStreamToVideo(domLocalVideo[0], stream);
         connetMeeting(this.meetingData.meetingID); // 成功打开摄像头后，开始创建或者加入输入的房间号
@@ -84,7 +85,6 @@ export default {
       .catch((e) => alert(`getUserMedia() error: ${e.name}`));
 
     this.socketInit();
-    
   },
   methods: {
     socketInit() {
