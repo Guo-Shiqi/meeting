@@ -43,12 +43,6 @@ const routes = [
 
     component: () => import('../views/Meeting.vue')
   },
-  {
-    path: '/room',
-    name: 'Room',
-
-    component: () => import('../views/myroom.vue')
-  }
 ]
 
 const router = new VueRouter({

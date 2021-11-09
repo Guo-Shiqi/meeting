@@ -11,12 +11,16 @@ const options = {
 }
 
 const server = https.createServer(options);
-
 server.listen(server_config.SSL_PORT, () => {
   console.log(`signal server running success at https://${getIPAdress()}:${server_config.SSL_PORT}`);
 });
 
-const io = socketIO.listen(server);
+const io = socketIO(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
 
 // socket监听连接
 io.sockets.on('connection', (socket) => {
