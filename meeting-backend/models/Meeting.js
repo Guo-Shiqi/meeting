@@ -8,6 +8,7 @@ Meeting.init({
     password:DataTypes.STRING,
     beginTime:DataTypes.TIME,
     endTime:DataTypes.TIME,
+    note:DataTypes.STRING,
 }, {
     sequelize, // 我们需要传递连接实例
     modelName: 'Meeting', // 我们需要选择模型名称

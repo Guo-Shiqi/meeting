@@ -30,8 +30,8 @@ io.sockets.on('connection', (socket) => {
     const { room } = message;
     console.log('Received createAndJoinRoom：' + room);
     // 判断room是否存在
-    const clientsInRoom = io.sockets.adapter.rooms[room];
-    const numClients = clientsInRoom ? Object.keys(clientsInRoom.sockets).length : 0;
+    const clientsInRoom = io.sockets.adapter.rooms.get(room);
+    const numClients = clientsInRoom ? clientsInRoom.size : 0;
     console.log('Room ' + room + ' now has ' + numClients + ' client(s)');
     if (numClients === 0) {
       // room 不存在 不存在则创建（socket.join）
@@ -66,11 +66,19 @@ io.sockets.on('connection', (socket) => {
         peers: [], // 其他连接
       };
       // 查询其他连接
-      const otherSocketIds = Object.keys(clientsInRoom.sockets);
-      for (let i = 0; i < otherSocketIds.length; i++) {
-        if (otherSocketIds[i] !== socket.id) {
+      // const otherSocketIds = Object.keys(clientsInRoom);
+
+      // for (let i = 0; i < otherSocketIds.length; i++) {
+      //   if (otherSocketIds[i] !== socket.id) {
+      //     data.peers.push({
+      //       id: otherSocketIds[i],
+      //     });
+      //   }
+      // }
+      for (var x of clientsInRoom) {
+        if (x !== socket.id) {
           data.peers.push({
-            id: otherSocketIds[i],
+            id: x,
           });
         }
       }
@@ -89,7 +97,7 @@ io.sockets.on('connection', (socket) => {
     if (clientsInRoom) {
       const otherSocketIds = Object.keys(clientsInRoom.sockets);
       for (let i = 0; i < otherSocketIds.length; i++) {
-        const otherSocket = io.sockets.connected[otherSocketIds[i]];
+        const otherSocket = io.sockets.sockets.getr(otherSocketIds[i]);
         otherSocket.emit('exit', message);
       }
     }
@@ -111,7 +119,7 @@ io.sockets.on('connection', (socket) => {
     // const room = Object.keys(socket.rooms)[1];
     console.log('收到offer: from ' + message.from + ' room:' + message.room + ' to ' + message.to);
     // 根据id找到对应连接
-    const otherClient = io.sockets.connected[message.to];
+    const otherClient = io.sockets.sockets.get(message.to);
     if (!otherClient) {
       return;
     }
@@ -124,7 +132,7 @@ io.sockets.on('connection', (socket) => {
     // const room = Object.keys(socket.rooms)[1];
     console.log('收到answer: from ' + message.from + ' room:' + message.room + ' to ' + message.to);
     // 根据id找到对应连接
-    const otherClient = io.sockets.connected[message.to];
+    const otherClient = io.sockets.sockets.get(message.to);
     if (!otherClient) {
       return;
     }
@@ -136,7 +144,7 @@ io.sockets.on('connection', (socket) => {
   socket.on('candidate', (message) => {
     console.log('收到candidate: from ' + message.from + ' room:' + message.room + ' to ' + message.to);
     // 根据id找到对应连接
-    const otherClient = io.sockets.connected[message.to];
+    const otherClient = io.sockets.sockets.get(message.to);
     if (!otherClient) {
       return;
     }
