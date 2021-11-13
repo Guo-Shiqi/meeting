@@ -30,7 +30,7 @@
     </el-container>
 </template>
 <script>
-// import axios from "axios";
+import axios from "axios";
 export default {
     data() {
         return {
@@ -49,34 +49,16 @@ export default {
     },
     methods: {
         submit() {
-            if (this.formData.meetingID == "") {
-                alert("请输入会议号");
-            } else if (this.formData.name == "") {
-                alert("请输入您的名称");
-            } else {
-                this.$router.push({
-                    name: "Meeting",
-                    params: {
-                        meetingID: this.formData.meetingID,
-                        name: this.formData.name,
-                    },
-                });
-            }
-            //   axios({
-            //     url: "http://127.0.0.1:3001/api/user/signin",
-            //     method: "post",
-            //     data: {
-            //       name: "admin",
-            //       password: "admin",
-            //     },
-            //   })
-            //     .then((res) => {
-            //       alert(JSON.stringify(res));
-            //     })
-            //     .catch((err) => {
-            //       console.log(err);
-            //       alert("登陆失败");
-            //     });
+            axios({
+                url: "http://localhost:3001/api/meeting",
+                method: "post",
+                data: this.formData,
+            }).then((res) => {
+                alert(JSON.stringify(res));
+            }).catch((err) => {
+                console.log(err);
+                alert("登陆失败");
+            });
         },
     },
 };
