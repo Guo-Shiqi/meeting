@@ -7,6 +7,7 @@
       <div class="video-box" ref="video-box">
         <video class="video-mine" autoplay controls ref="video-mine"></video>
       </div>
+      <div class="video-group" ref="remoteDiv"></div>
     </div>
   </el-container>
 </template>
@@ -35,10 +36,10 @@ const SRC_OBJECT =
   "srcObject" in v
     ? "srcObject"
     : "mozSrcObject" in v
-      ? "mozSrcObject"
-      : "webkitSrcObject" in v
-        ? "webkitSrcObject"
-        : "srcObject";
+    ? "mozSrcObject"
+    : "webkitSrcObject" in v
+    ? "webkitSrcObject"
+    : "srcObject";
 
 // // socket连接
 // let socket;
@@ -57,7 +58,8 @@ export default {
       socket: null,
       socketID: null,
       roomID: null,
-      rtcPeerConnects: {}
+      rtcPeerConnects: {},
+      otherStream: [],
     };
   },
   mounted() {
@@ -199,7 +201,6 @@ export default {
         }
       });
     },
-
     connectMeeting(meetingID) {
       console.log("发送进入房间请求" + meetingID);
       console.log(this.socket);
@@ -211,12 +212,6 @@ export default {
       console.log("视频流绑定到video节点展示", video, stream);
       video[SRC_OBJECT] = stream;
     },
-    // function connetMeeting(meetingID) {
-    //   socket.emit("createAndJoinRoom", {
-    //     room: meetingID,
-    //   });
-    // }
-
     onCreateOfferSuccess(pc, otherSocketId, offer) {
       console.log(
         "createOffer: success " + " id:" + otherSocketId + " offer: ",
@@ -312,21 +307,28 @@ export default {
     onTrack(pc, otherSocketId, event) {
       console.log("onTrack from: " + otherSocketId);
       console.log(event);
-      // let otherVideoDom = $("#" + otherSocketId);
-      let otherVideoDom = null;
-      if (otherVideoDom.length === 0) {
-        // TODO 未知原因：会两次onTrack，就会导致建立两次dom
+      if (!document.getElementById(otherSocketId)) {
+        // 外层容器
+        const userDiv = document.createElement("div");
+        userDiv.className = "user";
+        userDiv.id = `${otherSocketId}-div`;
+
+        // 视频video
         const video = document.createElement("video");
         video.id = otherSocketId;
         video.autoplay = "autoplay";
-        video.muted = "muted";
-        video.style.width = 200;
-        video.style.height = 200;
-        video.style.marginRight = 5;
-        // $("#remoteDiv").append(video);
+        // video.muted = 'muted'
+
+        // 昵称
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "user-name";
+        // nameDiv.innerText = this.roomUsers[otherSocketId].userInfo.name;
+
+        userDiv.appendChild(video);
+        userDiv.appendChild(nameDiv);
+        this.$refs.remoteDiv.appendChild(userDiv);
       }
-      // pushStreamToVideo($("#" + otherSocketId)[0], event.streams[0]);
-      this.pushStreamToVideo(null, event.streams[0]);
+      this.pushStreamToVideo(document.getElementById(otherSocketId), event.streams[0]);
     },
     onRemoveStream(pc, otherSocketId, event) {
       console.log("onRemoveStream from: " + otherSocketId);
@@ -338,9 +340,7 @@ export default {
       // $("#" + otherSocketId).remove();
 
       console.log(event);
-    }
+    },
   },
 };
-
-
 </script>
