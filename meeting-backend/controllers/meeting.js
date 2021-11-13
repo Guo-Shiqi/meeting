@@ -2,26 +2,28 @@ const Meeting = require("../models/Meeting");
 const User = require("../models/User");
 
 
-var  createMeeting= async (ctx, next) => {
-    var {name,password,title,beginTime,endTime,userId}=ctx.request.body;
+var createMeeting = async (ctx, next) => {
+    var { name, password, title, beginTime, endTime, userId, note } = ctx.request.body;
     console.log(ctx.request.body)
-    const meeting=await Meeting.create({name,password,title,userId,beginTime,endTime});
-    ctx.response.body=meeting.toJSON();
+    const meeting = await Meeting.create({ name, password, title, userId, beginTime, endTime, note });
+    ctx.response.body = meeting.toJSON();
 };
 
-var getMeetings=async(ctx,next)=>{
-    ctx.response.body=await Meeting.findAll();
+var getMeetings = async (ctx, next) => {
+    ctx.response.body = await Meeting.findAll();
 }
-// var fn_signup = async (ctx, next) => {
-//     var
-//         name = ctx.request.body.name || '',
-//         password = ctx.request.body.password || '';
-//     console.log(`signup with name: ${name}, password: ${password}`);
-//     const user = await User.create({ name: name, password: password });
-//     ctx.response.body = user.toJSON();
-// };
+
+var getMeeting = async (ctx, next) => {
+    var { meetingId } = ctx.params
+    console.log(meetingId)
+    meetingId = Number(meetingId)
+    if (meetingId > 0) {
+        ctx.response.body = await Meeting.findByPk(meetingId)
+    }
+}
 
 module.exports = {
     'POST /api/meeting': createMeeting,
-    'GET /api/meeting': getMeetings
+    'GET /api/meeting': getMeetings,
+    'GET /api/meeting/:meetingId': getMeeting,
 };

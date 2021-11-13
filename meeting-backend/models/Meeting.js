@@ -6,8 +6,8 @@ Meeting.init({
     title: DataTypes.STRING,
     userId:DataTypes.INTEGER,
     password:DataTypes.STRING,
-    beginTime:DataTypes.TIME,
-    endTime:DataTypes.TIME,
+    beginTime:DataTypes.DATE,
+    endTime:DataTypes.DATE,
     note:DataTypes.STRING,
 }, {
     sequelize, // 我们需要传递连接实例
