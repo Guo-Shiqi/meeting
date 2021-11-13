@@ -4,10 +4,16 @@
       <h2>会议中ing</h2>
     </el-header>
     <div class="room">
-      <div class="video-box" ref="video-box">
-        <video class="video-mine" autoplay controls ref="video-mine"></video>
+      <!-- 讲台 -->
+      <div class="video-leader">
+        <video ref="video-mine" autoplay muted></video>
       </div>
-      <div class="video-group" ref="remoteDiv"></div>
+      <!-- 听众 -->
+      <div class="video-group" ref="remoteDiv">
+<!--        <div v-for="(item ,index) in otherStream" :key="index" class="user" :id="index+'div'">-->
+<!--          <video :id="index" autoplay :srcObject="item" :mozSrcObject="item" :webkitSrcObject="item"></video>-->
+<!--        </div>-->
+      </div>
     </div>
   </el-container>
 </template>
@@ -40,12 +46,6 @@ const SRC_OBJECT =
     : "webkitSrcObject" in v
     ? "webkitSrcObject"
     : "srcObject";
-
-// // socket连接
-// let socket;
-// // 本地socket id
-// let socketId;
-// 对RTCPeerConnection连接进行缓存
 
 let that;
 export default {
@@ -307,23 +307,21 @@ export default {
     onTrack(pc, otherSocketId, event) {
       console.log("onTrack from: " + otherSocketId);
       console.log(event);
+      console.log(event.streams[0]);
+      this.otherStream.push(event.streams[0]);
       if (!document.getElementById(otherSocketId)) {
         // 外层容器
         const userDiv = document.createElement("div");
         userDiv.className = "user";
         userDiv.id = `${otherSocketId}-div`;
-
         // 视频video
         const video = document.createElement("video");
         video.id = otherSocketId;
         video.autoplay = "autoplay";
-        // video.muted = 'muted'
-
         // 昵称
         const nameDiv = document.createElement("div");
         nameDiv.className = "user-name";
         // nameDiv.innerText = this.roomUsers[otherSocketId].userInfo.name;
-
         userDiv.appendChild(video);
         userDiv.appendChild(nameDiv);
         this.$refs.remoteDiv.appendChild(userDiv);
@@ -344,3 +342,40 @@ export default {
   },
 };
 </script>
+
+<style>
+
+  body {
+    overflow-y: auto;
+  }
+
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+  }
+
+  .room {
+    overflow: hidden;
+    margin: 0px auto;
+    border: 1px red solid;
+    padding: 10px;
+  }
+
+  .video-leader {
+    float: left;
+    height: 800px;
+  }
+
+  .video-group {
+    float: left;
+    margin-left: 10px;
+    overflow-y: auto;
+    height: 800px;
+  }
+
+  .user {
+    height: 225px;
+    margin-top: 10px;
+  }
+</style>
