@@ -45,7 +45,6 @@
 <script>
 import router from "../router";
 import { mapState } from "vuex";
-import user from "../../../meeting-backend/controllers/user";
 export default {
     data() {
         return {
@@ -66,8 +65,8 @@ export default {
             router.push({
                 name: "Meeting",
                 params: {
-                    meetingID: user.id,
-                    name: user.name,
+                    meetingID: this.user.id,
+                    name: this.user.name,
                 },
             });
         }
