@@ -63,21 +63,6 @@ export default {
           },
         });
       }
-      //   axios({
-      //     url: "http://127.0.0.1:3001/api/user/signin",
-      //     method: "post",
-      //     data: {
-      //       name: "admin",
-      //       password: "admin",
-      //     },
-      //   })
-      //     .then((res) => {
-      //       alert(JSON.stringify(res));
-      //     })
-      //     .catch((err) => {
-      //       console.log(err);
-      //       alert("登陆失败");
-      //     });
     },
   },
 };

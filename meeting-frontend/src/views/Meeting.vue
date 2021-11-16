@@ -10,9 +10,13 @@
       </div>
       <!-- 听众 -->
       <div class="video-group" ref="remoteDiv">
-<!--        <div v-for="(item ,index) in otherStream" :key="index" class="user" :id="index+'div'">-->
-<!--          <video :id="index" autoplay :srcObject="item" :mozSrcObject="item" :webkitSrcObject="item"></video>-->
-<!--        </div>-->
+        <!-- <div v-for="(item ,index) in otherStream" :key="index" class="user" :id="index + 'div'">
+
+          <div>
+            <span>{{ index }}</span>
+            <my-video :stream="item"></my-video>
+          </div>
+        </div> -->
       </div>
     </div>
   </el-container>
@@ -20,7 +24,7 @@
 <script>
 import WebRTCConfig from "../config";
 import io from "socket.io-client";
-
+import Vue from "vue";
 // 兼容处理
 const PeerConnection =
   window.RTCPeerConnection ||
@@ -42,12 +46,38 @@ const SRC_OBJECT =
   "srcObject" in v
     ? "srcObject"
     : "mozSrcObject" in v
-    ? "mozSrcObject"
-    : "webkitSrcObject" in v
-    ? "webkitSrcObject"
-    : "srcObject";
+      ? "mozSrcObject"
+      : "webkitSrcObject" in v
+        ? "webkitSrcObject"
+        : "srcObject";
 
 let that;
+Vue.component('my-video', {
+  functional: true,
+  render: function (createElement, context) {
+    // console.log(createElement);
+    // console.log(context)
+    // const userDiv = createElement("div");
+    // userDiv.className = "user";
+    // // 视频video
+    // const video = createElement("video");
+    // video.autoplay = "autoplay";
+    // // 昵称
+    // // const nameDiv = createElement("div");
+    // // nameDiv.className = "user-name";
+    // // nameDiv.innerText = this.roomUsers[otherSocketId].userInfo.name;
+    // userDiv.appendChild(video);
+    // // userDiv.appendChild(nameDiv);
+
+    // console.log("视频流绑定到video节点展示", video, stream);
+    // video[SRC_OBJECT] = stream;
+    var attr = {};
+    attr[SRC_OBJECT] = context.props.stream
+    attr["autoplay"] = "autoplay"
+    console.log(attr);
+    return createElement("video", { attrs: attr });
+  }
+})
 export default {
   name: "Meeting",
   data() {
@@ -344,38 +374,37 @@ export default {
 </script>
 
 <style>
+body {
+  overflow-y: auto;
+}
 
-  body {
-    overflow-y: auto;
-  }
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
 
-  video {
-    width: 100%;
-    height: 100%;
-    object-fit: fill;
-  }
+.room {
+  overflow: hidden;
+  margin: 0px auto;
+  border: 1px red solid;
+  padding: 10px;
+}
 
-  .room {
-    overflow: hidden;
-    margin: 0px auto;
-    border: 1px red solid;
-    padding: 10px;
-  }
+.video-leader {
+  float: left;
+  height: 400px;
+}
 
-  .video-leader {
-    float: left;
-    height: 800px;
-  }
+.video-group {
+  float: left;
+  margin-left: 10px;
+  overflow-y: auto;
+  height: 400px;
+}
 
-  .video-group {
-    float: left;
-    margin-left: 10px;
-    overflow-y: auto;
-    height: 800px;
-  }
-
-  .user {
-    height: 225px;
-    margin-top: 10px;
-  }
+.user {
+  height: 225px;
+  margin-top: 10px;
+}
 </style>
