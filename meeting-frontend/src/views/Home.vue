@@ -1,27 +1,32 @@
 <template>
     <el-container>
-        <el-header></el-header>
+        <el-header>
+            <el-row type="flex" class="row-bg" justify="space-between">
+                <el-col :span="6">
+                    <el-avatar>{{ avatar_name }}</el-avatar>
+                    <span>{{ user.name }}</span>
+                </el-col>
+                <el-col :span="6">
+                    <el-button type="text" icon="el-icon-setting" circle></el-button>
+                </el-col>
+            </el-row>
+        </el-header>
         <el-main>
-            <!-- <span>名称</span>s -->
-            <!-- <el-icon>
-                <setting />
-            </el-icon>-->
-            <br />
             <el-row :size="50">
                 <el-col :span="8">
-                    <div @click="join('join')">
+                    <div @click="go('join')">
                         <img src="../assets/btn_join.png" style="width: 44px;height: 44px;" />
                     </div>
                     <span>加入会议</span>
                 </el-col>
                 <el-col :span="8">
-                    <div @click="join('home')">
+                    <div @click="fast">
                         <img src="../assets/btn_fast.png" style="width: 44px;height: 44px;" />
                     </div>
                     <span>快速会议</span>
                 </el-col>
                 <el-col :span="8">
-                    <div @click="join('bookMeeting')">
+                    <div @click="go('bookMeeting')">
                         <img src="../assets/btn_book.png" style="width: 44px;height: 44px;" />
                     </div>
                     <span>预定会议</span>
@@ -30,7 +35,7 @@
             <hr width="320px" color="#dddddd" size="1px" />
             <div class="no_meeting">
                 <img src="../assets/no_meeting.png" style="width: 120px;height:84.8px ;" />
-                <br>
+                <br />
                 <span>暂无会议</span>
             </div>
         </el-main>
@@ -39,11 +44,33 @@
 
 <script>
 import router from "../router";
+import { mapState } from "vuex";
+import user from "../../../meeting-backend/controllers/user";
 export default {
+    data() {
+        return {
+
+        }
+    },
+    computed: {
+        ...mapState([
+            'user'
+        ]),
+        avatar_name: function () { return this.user.name.substr(this.user.name.length - 2) }
+    },
     methods: {
-        join: (page) => {
+        go: (page) => {
             router.push('/' + page);
         },
+        fast() {
+            router.push({
+                name: "Meeting",
+                params: {
+                    meetingID: user.id,
+                    name: user.name,
+                },
+            });
+        }
     }
 }
 
@@ -60,7 +87,7 @@ hr {
     margin-top: 20px;
 }
 
-.no_meeting{
+.no_meeting {
     margin-top: 100px;
 }
 </style>

@@ -27,7 +27,7 @@
 <script>
 import WebRTCConfig from "../config";
 import io from "socket.io-client";
-
+import Vue from "vue";
 // 兼容处理
 const PeerConnection =
   window.RTCPeerConnection ||
@@ -49,12 +49,38 @@ const SRC_OBJECT =
   "srcObject" in v
     ? "srcObject"
     : "mozSrcObject" in v
-    ? "mozSrcObject"
-    : "webkitSrcObject" in v
-    ? "webkitSrcObject"
-    : "srcObject";
+      ? "mozSrcObject"
+      : "webkitSrcObject" in v
+        ? "webkitSrcObject"
+        : "srcObject";
 
 let that;
+Vue.component('my-video', {
+  functional: true,
+  render: function (createElement, context) {
+    // console.log(createElement);
+    // console.log(context)
+    // const userDiv = createElement("div");
+    // userDiv.className = "user";
+    // // 视频video
+    // const video = createElement("video");
+    // video.autoplay = "autoplay";
+    // // 昵称
+    // // const nameDiv = createElement("div");
+    // // nameDiv.className = "user-name";
+    // // nameDiv.innerText = this.roomUsers[otherSocketId].userInfo.name;
+    // userDiv.appendChild(video);
+    // // userDiv.appendChild(nameDiv);
+
+    // console.log("视频流绑定到video节点展示", video, stream);
+    // video[SRC_OBJECT] = stream;
+    var attr = {};
+    attr[SRC_OBJECT] = context.props.stream
+    attr["autoplay"] = "autoplay"
+    console.log(attr);
+    return createElement("video", { attrs: attr });
+  }
+})
 export default {
   name: "Meeting",
   data() {

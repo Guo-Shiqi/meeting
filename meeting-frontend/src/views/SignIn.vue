@@ -24,8 +24,9 @@
     </el-container>
 </template>
 <script>
-import 'whatwg-fetch'
 import router from '../router';
+import axios from 'axios';
+import store from '../store';
 export default {
     data() {
         return {
@@ -38,19 +39,29 @@ export default {
     },
     methods: {
         submit() {
-            fetch("http://127.0.0.1:3001/api/user/signin", {
-                method: "POST",
-                body: JSON.stringify(this.formData),
-                headers: {
-                    'content-type': 'application/json'
-                },
-            }).then(res => {
-                console.log(res);
-                alert(JSON.stringify(res));
-            }).catch(err => {
-                console.log(err)
-                alert("登录失败")
-            })
+            axios.post("http://127.0.0.1:3001/api/user/signin", this.formData)
+                .then(res => {
+                    console.log(res);
+                    // alert(JSON.stringify(res));
+                    store.commit("login",res.data);
+                    router.push("/Home")
+                }).catch(err => {
+                    console.log(err)
+                    alert("登录失败")
+                })
+            // fetch("http://127.0.0.1:3001/api/user/signin", {
+            //     method: "POST",
+            //     body: JSON.stringify(this.formData),
+            //     headers: {
+            //         'content-type': 'application/json'
+            //     },
+            // }).then(res => {
+            //     console.log(res);
+            //     alert(JSON.stringify(res));
+            // }).catch(err => {
+            //     console.log(err)
+            //     alert("登录失败")
+            // })
         },
         toSignUp: () => {
             router.push("/signup")

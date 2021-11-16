@@ -23,6 +23,7 @@
     </el-container>
 </template>
 <script>
+import axios from 'axios'
 import 'whatwg-fetch'
 export default {
     data() {
@@ -36,24 +37,18 @@ export default {
         }
     },
     methods: {
-        submit: function(){
+        submit: function () {
             console.log(this)
             if (this.formData.password != this.formData.password2) {
                 alert("两次密码不同")
             } else {
-                fetch("http://127.0.0.1:3001/api/user/signup", {
-                    method: "POST",
-                    body: JSON.stringify(this.formData),
-                    headers: {
-                        'content-type': 'application/json'
-                    },
-                }).then(res => {
-                    console.log(res);
-                    alert("注册成功!\nId:" + res.id)
-                }).catch(err =>
-                    console.log(err)
-                )
-
+                axios.post("http://127.0.0.1:3001/api/user/signup", this.formData)
+                    .then(res => {
+                        console.log(res);
+                        alert("注册成功!\nId:" + res.data.id)
+                    }).catch(err =>
+                        console.log(err)
+                    )
             }
         }
     }
@@ -67,7 +62,6 @@ export default {
     text-align: left;
     padding: 0;
 }
-
 
 .el-main {
     text-align: left;
