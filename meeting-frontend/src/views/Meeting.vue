@@ -6,18 +6,15 @@
     <div class="room">
       <!-- 讲台 -->
       <div class="video-leader">
-        <video ref="video-mine" autoplay muted></video>
+        <video ref="video-mine" autoplay muted controls></video>
       </div>
       <!-- 听众 -->
       <div class="video-group" ref="remoteDiv">
-        <!-- <div v-for="(item ,index) in otherStream" :key="index" class="user" :id="index + 'div'">
-
-          <div>
-            <span>{{ index }}</span>
-            <my-video :stream="item"></my-video>
-          </div>
-        </div> -->
       </div>
+    </div>
+    <div class="functional-area">
+      <button @click="openCamera">打开摄像头</button>
+      <button @click="closeCamera">关闭摄像头</button>
     </div>
   </el-container>
 </template>
@@ -89,12 +86,13 @@ export default {
       socketID: null,
       roomID: null,
       rtcPeerConnects: {},
-      otherStream: [],
+      otherStream: {},
     };
   },
   mounted() {
     this.meetingID = this.$route.params.meetingID;
     this.myName = this.$route.params.name;
+    // 与信令服务器建立连接
     this.socket = io(WebRTCConfig.signalServer);
     this.$nextTick(() => {
       this.getUserMedia().then(() => {
@@ -135,6 +133,35 @@ export default {
         );
       });
     },
+    openCamera() {
+      // 打开摄像头，与closeCamera配合使用
+      let myVideo = this.$refs["video-mine"];
+      if (myVideo[SRC_OBJECT] == null) {
+        myVideo[SRC_OBJECT] = this.localStream;
+      }
+      const message = {
+          from: that.socketID,
+          room: that.roomID
+      };
+      console.log("向其他用户发送openCamera", message);
+      that.socket.emit("openCamera", message);
+    },
+    closeCamera() {
+      // 关闭本地摄像头, 这里没有真的关闭，只是去掉了video的来源
+      let myVideo = this.$refs["video-mine"];
+      // myVideo[SRC_OBJECT].getTracks()[0].stop(); // audio
+      // myVideo[SRC_OBJECT].getTracks()[1].stop(); // video
+      // this.localStream = null;
+      myVideo[SRC_OBJECT] = null;
+
+      // 通知远端其他用户
+      const message = {
+        from: that.socketID,
+        room: that.roomID,
+      };
+      console.log("向其他用户发送closeCamera", message);
+      that.socket.emit("closeCamera", message);
+    },
     socketInit() {
       this.socket.on("created", async (data) => {
         // data: [id,room,peers]
@@ -142,7 +169,7 @@ export default {
         // 保存signal server给我分配的socketId
         this.socketID = data.id;
         this.roomID = data.room;
-        console.log(this.socketID);
+        console.log("socketID:" + this.socketID);
         for (let i = 0; i < data.peers.length; i++) {
           let otherSocketId = data.peers[i].id;
           // 创建WebRtcPeerConnection // 注意：这个函数是下一个步骤写的。
@@ -153,6 +180,7 @@ export default {
           this.onCreateOfferSuccess(pc, otherSocketId, offer);
         }
       });
+
       this.socket.on("offer", (data) => {
         // data:  [from,to,room,sdp]
         console.log("收到offer: ", data);
@@ -223,12 +251,21 @@ export default {
         } else {
           // RTCPeerConnection关闭
           this.getWebRTCConnect(data.from).close;
-
           // 删除peer对象
           this.removeRtcConnect(data.from);
           // 移除video
-          // $("#" + data.from).remove();
+          document.getElementById(data.from + "-div").remove();
         }
+      });
+
+      this.socket.on("closeCamera", (data) => {
+        console.log("client:" + data.from + "close camera");
+        document.getElementById(data.from)[SRC_OBJECT] = null;
+      });
+
+      this.socket.on("openCamera", (data) => {
+         console.log("client:" + data.from + "open camera");
+         document.getElementById(data.from)[SRC_OBJECT] = this.otherStream[data.from];
       });
     },
     connectMeeting(meetingID) {
@@ -338,7 +375,7 @@ export default {
       console.log("onTrack from: " + otherSocketId);
       console.log(event);
       console.log(event.streams[0]);
-      this.otherStream.push(event.streams[0]);
+      this.otherStream[otherSocketId] = event.streams[0];
       if (!document.getElementById(otherSocketId)) {
         // 外层容器
         const userDiv = document.createElement("div");
@@ -356,7 +393,10 @@ export default {
         userDiv.appendChild(nameDiv);
         this.$refs.remoteDiv.appendChild(userDiv);
       }
-      this.pushStreamToVideo(document.getElementById(otherSocketId), event.streams[0]);
+      this.pushStreamToVideo(
+        document.getElementById(otherSocketId),
+        event.streams[0]
+      );
     },
     onRemoveStream(pc, otherSocketId, event) {
       console.log("onRemoveStream from: " + otherSocketId);
@@ -365,8 +405,7 @@ export default {
       // 删除peer对象
       this.removeRtcConnect(otherSocketId);
       // 移除video
-      // $("#" + otherSocketId).remove();
-
+      document.getElementById(otherSocketId + "-div").remove();
       console.log(event);
     },
   },

@@ -93,12 +93,39 @@ io.sockets.on('connection', (socket) => {
     // 关闭该连接
     socket.leave(room);
     // 转发exit消息至room其他客户端
-    const clientsInRoom = io.sockets.adapter.rooms[room];
+    const clientsInRoom = io.sockets.adapter.rooms.get(room);
     if (clientsInRoom) {
-      const otherSocketIds = Object.keys(clientsInRoom.sockets);
-      for (let i = 0; i < otherSocketIds.length; i++) {
-        const otherSocket = io.sockets.sockets.getr(otherSocketIds[i]);
+      for (let otherSocketID of clientsInRoom) {
+        const otherSocket = io.sockets.sockets.get(otherSocketID);
         otherSocket.emit('exit', message);
+      }
+    }
+  });
+
+  // 转发closeCamera消息至其他客户端 [from, room]
+  socket.on('closeCamera', (message) => {
+    console.log('Received closeCamera: ' + message.from + ' message: ' + JSON.stringify(message));
+    const { room } = message;
+    // 转发closeCamera消息至room其他客户端
+    const clientsInRoom = io.sockets.adapter.rooms.get(room);
+    if (clientsInRoom) {
+      for (let otherSocketID of clientsInRoom) {
+        const otherSocket = io.sockets.sockets.get(otherSocketID);
+        otherSocket.emit('closeCamera', message);
+      }
+    }
+  });
+
+  // 转发openCamera消息至其他客户端 [from, room]
+  socket.on('openCamera', (message) => {
+    console.log('Received openCamera: ' + message.from + ' message: ' + JSON.stringify(message));
+    const { room } = message;
+    // 转发openCamera消息至room其他客户端
+    const clientsInRoom = io.sockets.adapter.rooms.get(room);
+    if (clientsInRoom) {
+      for (let otherSocketID of clientsInRoom) {
+        const otherSocket = io.sockets.sockets.get(otherSocketID);
+        otherSocket.emit('openCamera', message);
       }
     }
   });
