@@ -1,16 +1,22 @@
 <template>
-  <el-container>
+  <el-container class="container">
     <el-header>
       <h2>会议中ing</h2>
     </el-header>
     <div class="room">
       <!-- 讲台 -->
       <div class="video-leader">
-        <video ref="video-mine" autoplay muted controls></video>
+        <video
+          class="main-video"
+          ref="video-mine"
+          autoplay
+          muted
+          controls
+          poster="../assets/temp.png"
+        ></video>
       </div>
       <!-- 听众 -->
-      <div class="video-group" ref="remoteDiv">
-      </div>
+      <div class="video-group" ref="remoteDiv"></div>
     </div>
     <div class="functional-area">
       <button @click="openCamera">打开摄像头</button>
@@ -114,8 +120,8 @@ export default {
         myVideo[SRC_OBJECT] = this.localStream;
       }
       const message = {
-          from: that.socketID,
-          room: that.roomID
+        from: that.socketID,
+        room: that.roomID,
       };
       console.log("向其他用户发送openCamera", message);
       that.socket.emit("openCamera", message);
@@ -238,8 +244,22 @@ export default {
       });
 
       this.socket.on("openCamera", (data) => {
-         console.log("client:" + data.from + "open camera");
-         document.getElementById(data.from)[SRC_OBJECT] = this.otherStream[data.from];
+        console.log("client:" + data.from + "open camera");
+        document.getElementById(data.from)[SRC_OBJECT] =
+          this.otherStream[data.from];
+      });
+
+      this.socket.on("roomUserName", (data) => {
+        const nameMap = data.nameMap;
+        for (var key in nameMap) {
+          document.getElementById(key + "-user-name").innerText = nameMap[key];
+        }
+      });
+
+      this.socket.on("getNameBySocketID", (data) => {
+        const { socketID } = data;
+        const { name } = data;
+        document.getElementById(socketID + "-user-name").innerText = name;
       });
     },
     connectMeeting(meetingID) {
@@ -247,6 +267,7 @@ export default {
       console.log(this.socket);
       this.socket.emit("createAndJoinRoom", {
         room: meetingID,
+        name: this.myName,
       });
     },
     pushStreamToVideo(video, stream) {
@@ -347,8 +368,6 @@ export default {
     },
     onTrack(pc, otherSocketId, event) {
       console.log("onTrack from: " + otherSocketId);
-      console.log(event);
-      console.log(event.streams[0]);
       this.otherStream[otherSocketId] = event.streams[0];
       if (!document.getElementById(otherSocketId)) {
         // 外层容器
@@ -359,13 +378,16 @@ export default {
         const video = document.createElement("video");
         video.id = otherSocketId;
         video.autoplay = "autoplay";
+        video.poster = "../assets/temp.png";
         // 昵称
         const nameDiv = document.createElement("div");
         nameDiv.className = "user-name";
+        nameDiv.id = otherSocketId + "-user-name";
         // nameDiv.innerText = this.roomUsers[otherSocketId].userInfo.name;
         userDiv.appendChild(video);
         userDiv.appendChild(nameDiv);
         this.$refs.remoteDiv.appendChild(userDiv);
+        this.socket.emit("getNameBySocketID", { socketID: otherSocketId });
       }
       this.pushStreamToVideo(
         document.getElementById(otherSocketId),
@@ -387,18 +409,28 @@ export default {
 </script>
 
 <style>
-body {
-  overflow-y: auto;
-}
+  * {
+    margin: 0;
+    padding: 0;
+  }
+  html,
+  body {
+    height: 100%;
+    width: 100%;
+  }
+  body {
+    overflow-y: auto;
+  }
 
-video {
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
-}
+  .container {
+    height: 100%;
+    width: 100%;
+  }
 
 .room {
   overflow: hidden;
+  width: 80%;
+  height: 80%;
   margin: 0px auto;
   border: 1px red solid;
   padding: 10px;
@@ -406,18 +438,41 @@ video {
 
 .video-leader {
   float: left;
-  height: 800px;
+  height: 100%;
+  width: 80%;
+  background: #2e3033;
+  border: 1px red solid;
+}
+
+.main-video {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
 }
 
 .video-group {
   float: left;
   margin-left: 10px;
   overflow-y: auto;
-  height: 800px;
+  height: 100%;
+  width: 18%;
+  background: #232527;
+  padding: 10px;
+  border: 1px solid red;
 }
 
 .user {
   height: 225px;
-  margin-top: 10px;
+  margin-bottom: 10px;
+  border: 1px red solid;
+  position: relative;
+}
+
+.user-name {
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
+  background: black;
+  color: white;
 }
 </style>

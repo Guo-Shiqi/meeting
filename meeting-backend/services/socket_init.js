@@ -22,12 +22,34 @@ const io = socketIO(server, {
   }
 });
 
+function getRoomUser(room) {
+  return io.sockets.adapter.rooms.get(room);
+}
+
+
+// 客户端socketID和本次所起的昵称的映射
+let socket_name_map = {};
+function insertSocketNameMap(socketID, name) {
+  socket_name_map[socketID] = name;
+}
+function getSocketName(socketID) {
+  if (socket_name_map.hasOwnProperty(socketID)) {
+    return socket_name_map[socketID];
+  }
+}
+function removeSocketName(socketID) {
+  delete socket_name_map[socketID];
+}
+
 // socket监听连接
 io.sockets.on('connection', (socket) => {
   console.log('连接建立');
   // 创建/加入房间
   socket.on('createAndJoinRoom', (message) => {
     const { room } = message;
+    const { name } = message;
+    // 记录每个用户的昵称
+    insertSocketNameMap(socket.id, name);
     console.log('Received createAndJoinRoom：' + room);
     // 判断room是否存在
     const clientsInRoom = io.sockets.adapter.rooms.get(room);
@@ -51,13 +73,12 @@ io.sockets.on('connection', (socket) => {
       // 加入房间中
       socket.join(room);
       console.log('Client ID ' + socket.id + ' joined room ' + room);
-
-      // joined告知房间里的其他客户端 [id,room]
-      io.sockets.in(room).emit('joined', {
-        id: socket.id, //socket id
-        room: room, // 房间号
-      });
-
+      // joined告知房间里的其他客户端 [id,room,name]
+      // io.sockets.in(room).emit('joined', {
+      //   id: socket.id, //socket id
+      //   room: room, // 房间号
+      //   name: name,
+      // });
 
       // 发送消息至客户端 [id,room,peers]
       const data = {
@@ -92,6 +113,8 @@ io.sockets.on('connection', (socket) => {
     const { room } = message;
     // 关闭该连接
     socket.leave(room);
+    // 删除昵称
+    removeSocketName(socket.id);
     // 转发exit消息至room其他客户端
     const clientsInRoom = io.sockets.adapter.rooms.get(room);
     if (clientsInRoom) {
@@ -134,6 +157,8 @@ io.sockets.on('connection', (socket) => {
   socket.on('disconnect', function (reason) {
     const socketId = socket.id;
     console.log('disconnect: ' + socketId + ' reason:' + reason);
+    // 删除昵称
+    removeSocketName(socket.id);
     const message = {
       from: socketId,
       room: '',
@@ -178,6 +203,34 @@ io.sockets.on('connection', (socket) => {
     // 转发candidate消息至其他客户端
     otherClient.emit('candidate', message);
   });
+
+  // 获取房间内用户昵称 [from, room]
+  socket.on("roomUserName", (message) => {
+    console.log('收到roomUserName: ', message);
+    const { room } = message;
+    // 转发closeCamera消息至room其他客户端
+    const clientsInRoom = getRoomUser(room);
+    if (clientsInRoom) {
+      for (let socketID of clientsInRoom) {
+        nameMap[socketID] = getSocketName(socketID);
+      }
+    }
+    const data = {
+      nameMap: nameMap
+    };
+    socket.emit("roomUserName", data);
+  });
+
+  // 根据socketID获取昵称
+  socket.on("getNameBySocketID", (message) => {
+    const { socketID } = message;
+    const data = {
+      socketID: socketID,
+      name: getSocketName(socketID)
+    };
+
+    socket.emit("getNameBySocketID", data);
+  })
 
 });
 
