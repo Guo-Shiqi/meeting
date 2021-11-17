@@ -5,16 +5,22 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    user: null
+    user: null,
+    meeting: null
   },
   mutations: {
     login(state, data) {
-      state.user = data;
+      state.user = data
     },
     logout(state) {
-      state.user = null;
+      state.user = null
+    },
+    setMeeting(state, data) {
+      state.meeting = data
+    },
+    clearMeeting(state){
+      state.meeting=null
     }
-
   },
   actions: {
   },

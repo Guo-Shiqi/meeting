@@ -13,8 +13,8 @@ module.exports = {
         // 此处开启 https
         // https: true,
         https: {
-            key: fs.readFileSync('./cert/key.pem'),
-            cert: fs.readFileSync('./cert/cert.pem'),
+            key: fs.readFileSync('../cert/key.pem'),
+            cert: fs.readFileSync('../cert/cert.pem'),
             // ca: fs.readFileSync('./cert/rootCA.pem'),
         },
     }

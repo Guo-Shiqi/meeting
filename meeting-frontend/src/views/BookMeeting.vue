@@ -20,7 +20,7 @@
                 </el-form-item>
                 <el-form-item label="入会密码" style="text-align: left">
                     <el-checkbox label="开启入会密码" v-model="usePwd"></el-checkbox>
-                    <el-input v-if="usePwd" v-model="formData.password" show-password></el-input>
+                    <el-input v-if="usePwd" v-model="formData.password"></el-input>
                 </el-form-item>
                 <el-form-item style="margin-top: 100px">
                     <el-button type="primary" @click="submit">预定</el-button>
@@ -31,6 +31,7 @@
 </template>
 <script>
 import axios from "axios";
+import { mapState } from "vuex";
 export default {
     data() {
         return {
@@ -50,7 +51,7 @@ export default {
     methods: {
         submit() {
             axios({
-                url: "http://localhost:3001/api/meeting",
+                url: "https://localhost:3001/api/meeting",
                 method: "post",
                 data: this.formData,
             }).then((res) => {
@@ -61,6 +62,26 @@ export default {
             });
         },
     },
+    mounted() {
+        this.formData.userId = this.user.id;
+        this.formData.title = this.user.name + "预定的会议"
+        var begin = new Date()
+        var end = new Date(begin.getTime() + (1 * 60 * 60 * 1000))
+        this.formData.beginTime = begin
+        this.formData.endTime = end
+    },
+    computed: mapState(['user']),
+    watch: {
+        usePwd(val, oldVal) {
+            if (val) {
+                this.formData.password = Math.floor(Math.random() * 100000).toString();
+            } else {
+                this.formData.password = null
+            }
+            console.log(`usePwd: ${oldVal} => ${val}`)
+
+        },
+    }
 };
 </script>
 <style scoped>

@@ -8,7 +8,7 @@ module.exports = {
     },
     serverConfig: {
         SSL_PORT: 8443,
-        server_key: __dirname + '\\resources\\keys\\server_key.pem',
-        server_crt: __dirname + '\\resources\\keys\\server_crt.pem'
+        server_key: __dirname + '/../cert/key.pem',
+        server_crt: __dirname + '/../cert/cert.pem'
     }
 }
